@@ -1,0 +1,23 @@
+# Keil build output
+Objects/
+Listings/
+
+# Keil generated files
+*.axf
+*.hex
+*.bin
+*.map
+*.lst
+*.dep
+*.crf
+*.d
+*.o
+*.obj
+
+# Keil user-specific configuration
+*.uvoptx
+*.uvguix.*
+
+# Temporary files
+*.bak
+*.log
