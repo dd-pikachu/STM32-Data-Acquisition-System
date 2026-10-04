@@ -2,27 +2,26 @@
 
 ## Project Overview
 
-This project is a beginner-level STM32 embedded systems project based on the STM32F103 microcontroller. It is designed to practice commonly used STM32 peripherals, data acquisition, data storage, and serial command interaction.
+This project is a data acquisition and storage system based on the STM32F103 microcontroller. It implements periodic ADC data acquisition, DMA transfer, external Flash storage, serial command interaction, and LED control.
 
-The system uses TIM3 to periodically trigger ADC1 for data acquisition and DMA to automatically transfer the sampled data to a memory buffer. After a group of samples is collected, the data is processed and stored in an external W25Q64 Flash memory.
+The project provides two implementations of the same system:
 
-The system also provides a USART1-based serial command interface. A Ring Buffer is used to receive serial data, and a simple command parser is implemented for historical data queries and LED control.
+- **Bare-Metal** — based on the STM32 main loop and interrupt mechanisms.
+- **FreeRTOS** — based on tasks, semaphores, mutexes, and interrupt-to-task synchronization.
 
-The current version is implemented using a bare-metal architecture and focuses on the integration of multiple STM32 peripherals and basic embedded software design.
-
+The two versions share the same hardware functions while using different software architectures.
 ## Features
 
-- Periodic ADC sampling triggered by TIM3
-- ADC1 + DMA for automatic data transfer
-- 64 ADC samples per data group
-- Average value calculation for each data group
-- W25Q64 external Flash data storage
-- USART1 serial communication
-- Ring Buffer for serial data reception
-- Serial command parsing
-- OLED status display
-- TIM2 PWM-based LED brightness control
-- Button-based LED control
+- Timer-Driven ADC Acquisition — Periodic ADC1 sampling triggered by TIM3 with deterministic sampling intervals.
+- DMA-Based Data Transfer — ADC samples are transferred to memory through DMA with minimal CPU intervention.
+- Buffered Batch Processing — 64-sample acquisition buffers are processed as independent data groups for subsequent storage and analysis.
+- External Non-Volatile Storage — W25Q64 SPI Flash is used for persistent storage of acquired ADC data and historical data retrieval.
+- Interrupt-Driven USART Communication — USART1 receives commands through interrupts and a Ring Buffer, reducing blocking operations in the application.
+- Command-Based Data and Device Control — A lightweight serial command interface supports historical data queries and LED control.
+- PWM-Based LED Control — TIM2 generates PWM signals for software-adjustable LED brightness.
+- Event-Driven Input Handling — Button input is integrated into the application control flow through event-based processing.
+- FreeRTOS Task-Based Architecture — The RTOS implementation separates data acquisition, storage, serial communication, and device control into independent tasks.
+- RTOS Synchronization and Resource Protection — Binary semaphores and mutexes are used for interrupt-to-task synchronization and shared Flash resource protection.
 
 ## Serial Commands
 
@@ -65,33 +64,56 @@ Other commands:
 - PWM: TIM2
 - ADC Trigger: TIM3
 
+
 ## Software Environment
 
 - Keil MDK
 - STM32F10x Standard Peripheral Library
 - ARM Compiler
+- FreeRTOS
+
 
 ## Project Structure
 
 ```text
 STM32-Data-Acquisition-System/
-├── Hardware/              # Hardware drivers and application modules
-├── Library/               # STM32F10x Standard Peripheral Library
-├── Start/                 # CMSIS and startup files
-├── User/                  # Main program and interrupt handlers
-├── Docs/                  # Project photos and screenshots
-├── .gitignore
-├── Project.uvprojx        # Keil project file
-└── README.md
-```
+│
+├── BareMetal/
+│   ├── Hardware/
+│   ├── Library/
+│   ├── Start/
+│   ├── User/
+│   └── Project.uvprojx
+│
+├── FreeRTOS/
+│   ├── Hardware/
+│   ├── Library/
+│   ├── Start/
+│   ├── FreeRTOS/
+│   ├── User/
+│   └── Project.uvprojx
+│
+├── Docs/
+├── README.md
+└── .gitignore
+...
 
-## Project Highlights
+## Bare-Metal Version
 
-This project integrates several commonly used STM32 peripherals and embedded software techniques, including ADC, DMA, timers, USART, Ring Buffer, SPI Flash, OLED, and PWM.
+The Bare-Metal version uses the STM32 main loop, interrupts, DMA, and modular peripheral drivers to implement data acquisition, storage, serial communication, and device control.
 
-The current version uses a bare-metal architecture. The main loop handles data processing, serial command parsing, and button detection, while interrupts and DMA are used for real-time data transfer.
+## FreeRTOS Version
 
-Compared with individual peripheral experiments, this project focuses more on the cooperation between multiple functional modules and uses a modular structure to organize the driver and application code.
+The FreeRTOS version organizes the system into multiple tasks and uses synchronization mechanisms for communication between interrupts and tasks, as well as shared resource protection.
+
+The FreeRTOS implementation includes:
+
+- Task-based system architecture
+- Binary semaphores for interrupt-to-task synchronization
+- Mutex for shared W25Q64 Flash access
+- Ring Buffer for USART reception
+- DMA-based data acquisition
+- W25Q64 data storage and retrieval
 
 ## Demo
 
