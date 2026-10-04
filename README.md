@@ -96,7 +96,7 @@ STM32-Data-Acquisition-System/
 ├── Docs/
 ├── README.md
 └── .gitignore
-...
+```
 
 ## Bare-Metal Version
 
